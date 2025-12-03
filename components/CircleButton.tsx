@@ -10,23 +10,31 @@ const CircleButton: React.FC<CircleButtonProps> = ({ label, colorClass, href }) 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    
-    if (element) {
-      // Calculate position manually to ensure fixed header doesn't cover content
-      // This is more reliable than scrollIntoView or CSS scroll-padding in some contexts
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
-  
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+    try {
+      const targetId = href.replace('#', '');
+      const element = document.getElementById(targetId);
       
-      // Update URL hash without jumping
-      window.history.pushState(null, '', href);
+      if (element) {
+        // Calculate position manually to ensure fixed header doesn't cover content
+        // This is more reliable than scrollIntoView or CSS scroll-padding in some contexts
+        const headerOffset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+    
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        
+        // Update URL hash without jumping
+        window.history.pushState(null, '', href);
+      } else {
+        // Fallback if element not found
+        window.location.href = href;
+      }
+    } catch (error) {
+      console.warn("Scroll failed:", error);
+      window.location.href = href;
     }
   };
 

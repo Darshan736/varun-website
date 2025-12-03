@@ -17,22 +17,31 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     setIsOpen(false);
     
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
+    try {
+      const targetId = href.replace('#', '');
+      const element = document.getElementById(targetId);
+      
+      if (element) {
+        // Calculate position manually to ensure fixed header doesn't cover content
+        const headerOffset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
     
-    if (element) {
-      // Calculate position manually to ensure fixed header doesn't cover content
-      const headerOffset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
   
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-
-      // Update URL hash without jumping
-      window.history.pushState(null, '', href);
+        // Update URL hash without jumping
+        window.history.pushState(null, '', href);
+      } else {
+        // Fallback if element not found in DOM
+        window.location.href = href;
+      }
+    } catch (error) {
+      console.warn("Navigation failed:", error);
+      // Fallback to default browser behavior
+      window.location.href = href;
     }
   };
 
